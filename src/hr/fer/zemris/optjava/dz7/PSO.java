@@ -57,7 +57,7 @@ public class PSO
 			{
 				for(int d=0;d<DIM;++d)
 				{
-					
+					v[i][d]=;
 				}
 			}
 		}
