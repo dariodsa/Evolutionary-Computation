@@ -12,6 +12,11 @@ public class PSO
 	private double[] pbest_f;
 	private double[][] x;
 	private double[][] v;
+	private double[][] pbest;
+	
+	
+	private final double C1 = 2;
+	private final double C2 = 2;
 	
 	private IReadOnlyDataset dataset;
 	
@@ -57,7 +62,9 @@ public class PSO
 			{
 				for(int d=0;d<DIM;++d)
 				{
-					v[i][d]=;
+					v[i][d]+=C1*(new Random().nextDouble())*(pbest[i][d]-x[i][d]);
+					v[i][d]+=C2*(new Random().nextDouble())*(-x[i][d]);
+					x[i][d]+=v[i][d];
 				}
 			}
 		}
