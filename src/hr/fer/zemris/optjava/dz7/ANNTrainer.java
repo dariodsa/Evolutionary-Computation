@@ -12,7 +12,7 @@ public class ANNTrainer {
 			
 		}*/
 		try {
-			PSO P= new PSO("iris.data", 10, 600, 0.1, 5);
+			PSO P= new PSO("iris.data", 20, 800, 0.1, 6);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

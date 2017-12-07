@@ -18,6 +18,8 @@ public class PSO
 	private final double C1 = 2;
 	private final double C2 = 2;
 	
+	private final double VMAX = 0.4;
+	
 	private IReadOnlyDataset dataset;
 	private int DIM;
 	public PSO(String filePath,int populationSize,int maxIter,double meer,int neighbourSize) throws IOException
@@ -31,17 +33,17 @@ public class PSO
 		
 		f=new double[populationSize];
 		pbest_f=new double[populationSize];
-		
+		for(int i=0;i<populationSize;++i)pbest_f[i]=898989;
 		start();
 	}
 	private void start()
 	{
 		ITransferFunction I = new SigmoidTransferFunction();
 		
-		FFANN network = new FFANN(new int[] {4,5,3,3},
+		FFANN network = new FFANN(new int[] {4,10,10,3},
 				  new ITransferFunction[] {
 				    new SigmoidTransferFunction(),
-					new SigmoidTransferFunction(),
+				    new SigmoidTransferFunction(),
 					new SigmoidTransferFunction()
 				  },
 				  dataset);
@@ -96,7 +98,8 @@ public class PSO
 				if(f[i]<pbest_f[i])
 				{
 					pbest_f[i]=f[i];
-					pbest[i]=x[i];
+					//pbest[i]=x[i];
+					pbest[i]=Arrays.copyOf(x[i], x[i].length);
 					
 				}
 			
@@ -119,6 +122,8 @@ public class PSO
 				{
 						v[i][d]+=C1*(new Random().nextDouble())*(pbest[i][d]-x[i][d]);
 						v[i][d]+=C2*(new Random().nextDouble())*(bestNeighbour[d]-x[i][d]);
+						if(v[i][d]<-VMAX)v[i][d]=-VMAX;
+						if(v[i][d]>VMAX)v[i][d]=VMAX;
 						x[i][d]+=v[i][d];
 				}
 				

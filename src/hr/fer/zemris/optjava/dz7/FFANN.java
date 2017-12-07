@@ -43,13 +43,13 @@ public class FFANN
 			outputs=new double[sizeOfLayers[i]];
 			for(int j=0;j<sizeOfLayers[i];++j)
 			{
-				int sum=0;
+				double sum=0;
 				for(int k=0;k<sizeOfLayers[i-1];++k)
 				{
 					sum+=inputs[k]*weights[br++];
 				}
 				//System.out.println(i-1+"+"+functions.length);
-				outputs[j]=functions[i-1].function(sum-weights[br++]);
+				outputs[j]=functions[i-1].function(sum+weights[br++]);
 			}
 			inputs=new double[sizeOfLayers[i]];
 			for(int j=0;j<sizeOfLayers[i];++j)
