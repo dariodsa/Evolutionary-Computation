@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class FFANN 
 {
-	
+	private IReadOnlyDataset dataset;
 	private int[] sizeOfLayers; 
 	private int weightsCount;
 	private ITransferFunction[] functions;
@@ -16,7 +16,28 @@ public class FFANN
 			this.sizeOfLayers[i]=sizeOfLayers[i];
 		
 		this.functions=Arrays.copyOf(functions, functions.length);
+		this.dataset=dataset;
 		setWeigthsCount();
+	}
+	public double calcError(double[] values)
+	{
+		double ans=0;
+		//System.out.println(dataset.numberOfSamples());
+		for(int k=0;k<dataset.numberOfSamples();++k)
+		{
+			double[] inputs=new double[dataset.numberOfInputs()];
+			//double[] output=new double[dataset.numberOfOutputs()];
+			
+			inputs=dataset.getSample(k);
+			
+			double[] output=calcOutputs(inputs, values);
+			for(int j=0;j<dataset.numberOfOutputs();++j)
+			{
+				//System.out.println(output[j]+","+dataset.getOutput(k)[j]);
+				ans+=(dataset.getOutput(k)[j]-output[j])*(dataset.getOutput(k)[j]-output[j]);
+			}
+		}
+		return ans/dataset.numberOfSamples();
 	}
 	private void setWeigthsCount()
 	{

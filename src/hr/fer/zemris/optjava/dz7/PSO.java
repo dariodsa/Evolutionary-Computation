@@ -20,16 +20,18 @@ public class PSO
 	
 	private final double VMAX = 0.4;
 	
+	private FFANN network;
 	private IReadOnlyDataset dataset;
 	private int DIM;
-	public PSO(String filePath,int populationSize,int maxIter,double meer,int neighbourSize) throws IOException
+	public PSO(FFANN network,int populationSize,int maxIter,double meer,int neighbourSize) throws IOException
 	{
+		this.network=network;
 		this.populationSize=populationSize;
 		this.maxIter=maxIter;
 		this.meer=meer;
 		this.neighbourSize=neighbourSize;
 		
-		dataset=new IReadOnlyDataset(filePath);
+		
 		
 		f=new double[populationSize];
 		pbest_f=new double[populationSize];
@@ -38,15 +40,7 @@ public class PSO
 	}
 	private void start()
 	{
-		ITransferFunction I = new SigmoidTransferFunction();
 		
-		FFANN network = new FFANN(new int[] {4,10,10,3},
-				  new ITransferFunction[] {
-				    new SigmoidTransferFunction(),
-				    new SigmoidTransferFunction(),
-					new SigmoidTransferFunction()
-				  },
-				  dataset);
 		
 		DIM=network.getWeightsCount();
 		
@@ -142,13 +136,5 @@ public class PSO
 	{
 		return new Random().nextDouble()*(y-x)+x;
 	}
-	class SigmoidTransferFunction implements ITransferFunction
-	{
-
-		public double function(double x) {
-			
-			return 1.0/(1+Math.exp(-x));
-		}
-		
-	}
+	
 }
