@@ -31,12 +31,12 @@ public class ANNTrainer {
 		catch (IOException e) {e.printStackTrace();}
 		
 		TDNN network = new TDNN(new int[] {1,10,1},8,ITransfer.TANH,datasetTrain);
-		
+		Elman network2 = new Elman(new int[] {1,10,1},ITransfer.TANH,datasetTrain);
 		//System.out.println(dataset.numberOfSamples());
 		
 		if(true)
 		{
-			DE de = new DE(network, ANNTrainer.population, ANNTrainer.merr, ANNTrainer.maxiter,datasetTrain,datasetReal);
+			DE de = new DE(network2, ANNTrainer.population, ANNTrainer.merr, ANNTrainer.maxiter,datasetTrain,datasetReal);
 		}
 	}
 	

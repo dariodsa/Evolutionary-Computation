@@ -86,7 +86,7 @@ public class DE
 		double[] result = new double[network.getWeightsCount()];
 		for(int i=0;i<result.length;++i)
 		{
-			result[i]=F*(weights[num%2][left][i]-weights[num%2][right][i]);
+			result[i]=(rand.nextDouble()*2)*(weights[num%2][left][i]-weights[num%2][right][i]);
 		}
 		int add = getIdTargetVectorRand();
 		for(int i=0;i<result.length;++i)
