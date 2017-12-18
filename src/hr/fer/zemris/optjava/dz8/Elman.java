@@ -67,7 +67,7 @@ public class Elman implements Network{
 			}
 			
 		}
-		return ans;
+		return ans/dataset.numberOfSamples();
 	}
 	private double[] calcOutputs(double[] inputs, double[] values) {
 		int br=0;

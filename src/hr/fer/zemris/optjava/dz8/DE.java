@@ -101,10 +101,10 @@ public class DE
 		double randNum = rand.nextDouble()*mutant.length;
 		for(int i=0;i<randNum;++i)
 		{
-			result[i] = mutant[i];
+			result[i] = mutant[i] + rand.nextDouble()*0.5-0.25;
 		}
 		for(int i=(int)randNum;i<mutant.length;++i)
-			result[i] = weights[num%2][targetId][i];
+			result[i] = weights[num%2][targetId][i] + + rand.nextDouble()*0.5-0.25;
 		return result;
 	}
 	private int getIdTargetVectorRand()

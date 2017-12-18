@@ -67,7 +67,7 @@ public class TDNN implements Network{
 			
 			//if(i<13)System.out.println(dataset.getOutput(i)+"/="+output[0]);
 		}
-		return ans;///dataset.numberOfSamples();
+		return ans/dataset.numberOfSamples();
 	}
 	public double[] calcOutputs(double[] inputs,double[] weights)
 	{
