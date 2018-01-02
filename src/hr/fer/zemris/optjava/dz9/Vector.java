@@ -2,7 +2,7 @@ package hr.fer.zemris.optjava.dz9;
 
 import java.util.Arrays;
 
-public class Vector {
+public class Vector implements Comparable<Vector>{
 	double[] array;
 	private Vector(){}
 	public Vector(double[] array)
@@ -25,5 +25,36 @@ public class Vector {
 			V.array[i] = array[i];
 		}
 		return V;
+	}
+	public int getNumOfVariables()
+	{
+		return this.array.length;
+	}
+	@Override
+	public int compareTo(Vector V)
+	{
+		boolean better = true;
+		for(int i=0;i<array.length;++i)
+		{
+			if(array[i]<V.array[i])
+			{
+				better = false;
+				break;
+			}
+		}
+		if(better)
+			return -1;
+		boolean worse = true;
+		for(int i=0;i<array.length;++i)
+		{
+			if(array[i]>V.array[i])
+			{
+				worse = false;
+				break;
+			}
+		}
+		if(worse)
+			return 1;
+		return 0;
 	}
 }

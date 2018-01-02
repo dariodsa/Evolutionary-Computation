@@ -75,19 +75,65 @@ public class Population
 			}
 		}
 	}
-	private List<List<Vector>> runTopologicalSort()
-	{
-		return null;
-	}
 	private void generateKindnessOfPopulation()
 	{
-		//odredi parametar sigma share i MALU POZITIVNU konstantu e
-		//Fmin = N + e
-		List<List<Vector>> fronts = runTopologicalSort();
-		//Topološko sortiranje
-		// for petlja za svaku frontu
-		   // q rjesenje u fronti 
-		   // Fj,q = Fmin - e
-		   // gustoca nise ncq 
+		int N = populationSize;
+		double Fmin = N + epsilon;
+		List<List<Vector>> fronts = TopologicalSort.runTopologicalSort(population);
+		for(List<Vector> front : fronts)
+		{
+			List<Double> values = new ArrayList<>();
+			double min = Double.POSITIVE_INFINITY;
+			for(int j=0;j<front.size();++j)
+			{
+				double gustocaNise = gustocaNise(j, front);
+				values.add((Fmin-epsilon)/gustocaNise);
+				min = Math.min(min, (Fmin-epsilon)/gustocaNise);
+			}
+			Fmin = min;
+		}
+	}
+	private double potencija(double x, double y)
+	{
+		if(y == 2.0)
+		{
+			return x*x;
+		}
+		return Math.pow(x,y);
+	}
+	private double sh(double d)
+	{
+		return d<sigmaShare?(1-potencija(d/sigmaShare,alpha)):0;
+	}
+	private double dist(Vector V1, Vector V2,double[] nazivnik)
+	{
+		double sol = 0;
+		for(int i=0;i<V1.array.length;++i)
+		{
+			sol += (V1.array[i]-V2.array[i])*(V1.array[i]-V2.array[i]) /
+					(nazivnik[i]);
+		}
+		return Math.sqrt(sol);
+	}
+	private double gustocaNise(int pos, List<Vector> list)
+	{
+		double ans = 0;
+		double[] nazivnik = new double[list.get(0).getNumOfVariables()];
+		for(int j=0;j<list.get(0).getNumOfVariables();++j)
+		{
+			double min = Double.POSITIVE_INFINITY;
+			double max = Double.NEGATIVE_INFINITY;
+			for(int i=0;i<list.size();++i)
+			{
+				min = Math.min(min,list.get(i).get(j));
+				max = Math.max(max,list.get(i).get(j));
+			}	
+			nazivnik[j] = (max-min)*(max-min);
+		}
+		for(int i=0;i<list.size();++i)
+		{
+			ans += sh(dist(list.get(pos),list.get(i),nazivnik));
+		}
+		return ans;
 	}
 }
