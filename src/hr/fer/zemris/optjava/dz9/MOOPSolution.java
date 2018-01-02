@@ -30,16 +30,17 @@ public class MOOPSolution implements MOOPProblem{
 		return true;
 	}
 	@Override
-	public void evaluateSolution(double[] solution, double[] objectives) throws Exception
+	public double[] evaluateSolution(double[] solution) throws Exception
 	{
 		if(isDomainOk(solution)==false)
 			throw new Exception("Domain is not OK.");
 		int br=0;
+		double[] objectives = new double[functions.size()];
 		for(Function<Vector,Double> F : functions)
 		{
 			objectives[br++] = F.apply(new Vector(solution));
 		}
-		
+		return objectives;
 	}
 	public int getNumOfVariables()
 	{

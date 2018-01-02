@@ -8,9 +8,9 @@ public class Population
 {
 	private static Random rand = new Random(System.currentTimeMillis());
 	
-	private final double minValue = -10;
-	private final double maxValue = 10;
-	private final double sigmaShare = 0.1;
+	private final double minValue = -5;
+	private final double maxValue = 5;
+	private final double sigmaShare = 1.1;
 	private final double epsilon = 0.9;
 	private final double alpha = 2;
 	
@@ -19,20 +19,54 @@ public class Population
 	
 	private MOOPSolution solution;
 	private List<Vector> population;
+	private double[][] results;
+	double[] kindness; 
 	
-	public Population(int populationSize, int maxiter,MOOPSolution solution)
+	public Population(int populationSize, int maxiter,MOOPSolution solution) throws Exception
 	{
 		this.populationSize = populationSize;
 		this.maxiter        = maxiter;
 		this.solution       = solution;
 		
 		this.population = new ArrayList<>();
+		this.results    = new double[populationSize][solution.getNumberOfObjectives()];
+		this.kindness   = new double[populationSize];
 		generatePopulation();
+		/*for(int i=0;i<populationSize;++i)
+			results[i] = solution.evaluateSolution(population.get(i).array);
+		for(int i=0;i<populationSize;++i)
+		{
+			for(int j=0;j<population.get(i).array.length;++j)
+			{
+				System.out.printf("%f ",population.get(i).array[j]);
+			}
+			System.out.printf("%n Result ");
+			for(int j=0;j<results[i].length;++j)
+			{
+				System.out.printf("%f ", results[i][j]);
+			}
+			System.out.printf("%n");
+		}*/
 	}
-	public void run()
+	public void run() throws Exception
 	{
 		while(maxiter-->0)
 		{
+			for(int i=0;i<populationSize;++i)
+				results[i] = solution.evaluateSolution(population.get(i).array);
+			
+			if(maxiter%100==0)
+			{
+				System.out.println("Iterations remains ... " +maxiter);
+				System.out.println("Results: %n");
+				List<List<Vector>> fronts = TopologicalSort.runTopologicalSort(results,population);
+				for(int i=0;i<fronts.get(0).get(0).array.length;++i)
+				{
+					System.out.print(fronts.get(0).get(0).array[0]+" ");
+				}
+				System.out.println();
+			}
+			
 			generateKindnessOfPopulation();
 			
 			List<Vector> newPopulation = new ArrayList<>();
@@ -40,23 +74,53 @@ public class Population
 			{
 				Vector parent1 = getParent();
 				Vector parent2 = getParent();
-				newPopulation.add(getKid(parent1,parent2));
+				newPopulation.add(new Vector(getKid(parent1,parent2)));
 			}
 			population = newPopulation.stream()
 						.map(t -> t.clone())
 						.collect(Collectors.toList());
 						
 		}
+		for(int i=0;i<populationSize;++i)
+			results[i] = solution.evaluateSolution(population.get(i).array);
+		List<List<Vector>> fronts = TopologicalSort.runTopologicalSort(results,population);
+		System.out.println("Results: %n");
+		for(int i=0;i<fronts.get(0).get(0).array.length;++i)
+		{
+			System.out.print(fronts.get(0).get(0).array[0]+" ");
+		}
 	}
 	private Vector getParent()
 	{
-		return null;
+		double sum = 0;
+		for(int i=0;i<kindness.length;++i)
+			sum += kindness[i];
+		double random = rand.nextDouble() * sum;
+		
+		sum = 0;
+		for(int i=0;i<kindness.length;++i)
+		{
+			sum+=kindness[i];
+			if(sum<=random)
+				return population.get(i);
+		}
+		return population.get(0);
 	}
-	private Vector getKid(Vector parent1, Vector parent2)
+	private double[] getKid(Vector parent1, Vector parent2)
 	{
-		return null;
+		while(true)
+		{
+			double[] kid = new double[solution.getNumOfVariables()];
+			for(int i=0;i<solution.getNumOfVariables();++i)
+			{
+				kid[i] = (parent1.array[i]+parent2.array[i])/2.0 
+						+ rand.nextGaussian()*0.25;
+			}
+			if(solution.isDomainOk(kid))
+				return kid;
+		}
 	}
-	private void generatePopulation() //random from 
+	private void generatePopulation() throws Exception //random from 
 	{
 		int num = 0;
 		double distance = Math.abs(minValue - maxValue);
@@ -65,7 +129,7 @@ public class Population
 			double[] kid = new double[solution.getNumOfVariables()];
 			for(int i=0, len=solution.getNumOfVariables();i<len;++i)
 			{
-				double x = rand.nextDouble() * distance - minValue;
+				double x = rand.nextDouble() * distance + minValue;
 				kid[i] = x;
 			}
 			if(solution.isDomainOk(kid))
@@ -74,24 +138,37 @@ public class Population
 				++num;
 			}
 		}
+		int iter = 0;
+		for(Vector member : population)
+		{
+			results[iter++] = solution.evaluateSolution(member.array);
+		}
 	}
 	private void generateKindnessOfPopulation()
 	{
 		int N = populationSize;
 		double Fmin = N + epsilon;
-		List<List<Vector>> fronts = TopologicalSort.runTopologicalSort(population);
+		List<List<Vector>> fronts = TopologicalSort.runTopologicalSort(results,population);
+		int br = 0;
+		List<Vector> tempPopulation = new ArrayList<>();
 		for(List<Vector> front : fronts)
 		{
-			List<Double> values = new ArrayList<>();
 			double min = Double.POSITIVE_INFINITY;
 			for(int j=0;j<front.size();++j)
 			{
+				tempPopulation.add(front.get(j));
 				double gustocaNise = gustocaNise(j, front);
-				values.add((Fmin-epsilon)/gustocaNise);
+				//values.add((Fmin-epsilon)/gustocaNise);
+				kindness[br++] = (Fmin-epsilon)/gustocaNise; 
+				//System.out.println((Fmin-epsilon)+ " -> " + gustocaNise+ " = " + kindness[br-1]);
 				min = Math.min(min, (Fmin-epsilon)/gustocaNise);
 			}
 			Fmin = min;
 		}
+		population.clear();
+		
+		for(int i=0;i<populationSize;++i)
+			population.add(tempPopulation.get(i).clone());
 	}
 	private double potencija(double x, double y)
 	{
@@ -103,7 +180,7 @@ public class Population
 	}
 	private double sh(double d)
 	{
-		return d<sigmaShare?(1-potencija(d/sigmaShare,alpha)):0;
+		return d<sigmaShare?(1.0-potencija(d/sigmaShare,alpha)):0;
 	}
 	private double dist(Vector V1, Vector V2,double[] nazivnik)
 	{

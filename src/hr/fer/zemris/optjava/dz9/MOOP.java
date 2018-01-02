@@ -9,9 +9,9 @@ public class MOOP {
 		//vrsta prostora  decision-space || objective-space
 		//maxiter
 		
-		/*int problemType = Integer.parseInt(args[0]);
-		int n = Integer.parseInt(args[1]);
-		int maxiter = Integer.parseInt(args[3]);*/
+		int problemType    = Integer.parseInt(args[0]);
+		int populationSize = Integer.parseInt(args[1]);
+		int maxiter        = Integer.parseInt(args[3]);
 		
 		List<Function<Vector,Double>> functions = new ArrayList<>();
 		functions.add(x -> x.get(0) * x.get(0));
@@ -28,10 +28,20 @@ public class MOOP {
 		
 		MOOPSolution mo= new MOOPSolution(
 					functions,
-					2,
+					4,
 					domainFunctions);
-		
-		
+		try{
+			Population P = new Population(populationSize,
+										  maxiter,
+										  mo);
+			P.run();
+		}
+		catch(Exception e)
+		{
+			System.out.println("Variables are not in the valid domain.");
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 }
