@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public class Vector {
 	double[] array;
+	private Vector(){}
 	public Vector(double[] array)
 	{
 		this.array = new double[array.length];
@@ -14,5 +15,15 @@ public class Vector {
 		if(num < 0 || num >= array.length)
 				throw new RuntimeException("Not in the domain of the array.");
 		return array[num];
+	}
+	public Vector clone()
+	{
+		Vector V = new Vector();
+		V.array = new double[array.length];
+		for(int i=0,len=array.length;i<len;++i)
+		{
+			V.array[i] = array[i];
+		}
+		return V;
 	}
 }

@@ -18,31 +18,31 @@ public class MOOPSolution implements MOOPProblem{
 	public int getNumberOfObjectives() {
 		return this.domainFunctions.size();
 	}
-
-	@Override
-	public void evaluateSolution(double[] solution, double[] objectives) 
+	public boolean isDomainOk(double[] solution)
 	{
-		boolean everythingIsOK = true;
 		for(DomainFunction D : domainFunctions)
 		{
 			if(D.isTrue(solution)==false)
 			{
-				everythingIsOK = false;
-				break;
+				return false;
 			}
 		}
-		if(everythingIsOK)
-		{
-			int br=0;
-			for(Function<Vector,Double> F : functions)
-			{
-				objectives[br++] = F.apply(new Vector(solution));
-			}
-		}
-		else
-		{
-			//everything is not OK
-		}
+		return true;
 	}
-
+	@Override
+	public void evaluateSolution(double[] solution, double[] objectives) throws Exception
+	{
+		if(isDomainOk(solution)==false)
+			throw new Exception("Domain is not OK.");
+		int br=0;
+		for(Function<Vector,Double> F : functions)
+		{
+			objectives[br++] = F.apply(new Vector(solution));
+		}
+		
+	}
+	public int getNumOfVariables()
+	{
+		return this.numOfVariables;
+	}
 }
