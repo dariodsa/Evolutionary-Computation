@@ -1,4 +1,10 @@
 package hr.fer.zemris.optjava.dz9;
+import java.io.*;
+import java.nio.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -50,10 +56,13 @@ public class Population
 	}
 	public void run() throws Exception
 	{
+		List<String> lines = new ArrayList<>();
 		while(maxiter-->0)
 		{
 			for(int i=0;i<populationSize;++i)
 				results[i] = solution.evaluateSolution(population.get(i).array);
+			for(int i=0;i<populationSize;++i)
+				lines.add(results[i][0] + " " + results[i][1]);
 			
 			if(maxiter%100==0)
 			{
@@ -81,6 +90,17 @@ public class Population
 						.collect(Collectors.toList());
 						
 		}
+
+		for(int i=0;i<lines.size();++i)
+		{
+			lines.set(i,lines.get(i).replace('.', ','));
+		}
+		Path file = Paths.get("izlaz-dec.txt");
+		Files.write(file, lines, Charset.forName("UTF-8"));
+		printSolution();
+	}
+	private void printSolution() throws Exception
+	{
 		for(int i=0;i<populationSize;++i)
 			results[i] = solution.evaluateSolution(population.get(i).array);
 		List<List<Vector>> fronts = TopologicalSort.runTopologicalSort(results,population);
@@ -89,6 +109,7 @@ public class Population
 		{
 			System.out.print(fronts.get(0).get(0).array[0]+" ");
 		}
+		
 	}
 	private Vector getParent()
 	{
@@ -113,8 +134,8 @@ public class Population
 			double[] kid = new double[solution.getNumOfVariables()];
 			for(int i=0;i<solution.getNumOfVariables();++i)
 			{
-				kid[i] = (parent1.array[i]+parent2.array[i])/2.0 
-						+ rand.nextGaussian()*0.25;
+				kid[i] = (parent1.array[i]+parent2.array[i])/2.0
+						+ rand.nextGaussian()*0.125;
 			}
 			if(solution.isDomainOk(kid))
 				return kid;

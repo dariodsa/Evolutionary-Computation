@@ -13,27 +13,41 @@ public class MOOP {
 		int populationSize = Integer.parseInt(args[1]);
 		int maxiter        = Integer.parseInt(args[3]);
 		
-		List<Function<Vector,Double>> functions = new ArrayList<>();
-		functions.add(x -> x.get(0) * x.get(0));
-		functions.add(x -> x.get(1) * x.get(1));
-		functions.add(x -> x.get(2) * x.get(2));
-		functions.add(x -> x.get(3) * x.get(3));
+		List<Function<Vector,Double>> functions2 = new ArrayList<>();
+		functions2.add(x -> x.get(0) * x.get(0));
+		functions2.add(x -> x.get(1) * x.get(1));
+		functions2.add(x -> x.get(2) * x.get(2));
+		functions2.add(x -> x.get(3) * x.get(3));
 		
-		List<DomainFunction> domainFunctions = new ArrayList<>();
-		domainFunctions.add(new DomainFunction(x -> -5 < x.get(0) && x.get(0) < 5));
-		domainFunctions.add(new DomainFunction(x -> -5 < x.get(1) && x.get(1) < 5));
-		domainFunctions.add(new DomainFunction(x -> -5 < x.get(2) && x.get(2) < 5));
-		domainFunctions.add(new DomainFunction(x -> -5 < x.get(3) && x.get(3) < 5));
+		List<DomainFunction> domainFunctions2 = new ArrayList<>();
+		domainFunctions2.add(new DomainFunction(x -> -5 < x.get(0) && x.get(0) < 5));
+		domainFunctions2.add(new DomainFunction(x -> -5 < x.get(1) && x.get(1) < 5));
+		domainFunctions2.add(new DomainFunction(x -> -5 < x.get(2) && x.get(2) < 5));
+		domainFunctions2.add(new DomainFunction(x -> -5 < x.get(3) && x.get(3) < 5));
 		
 		
-		MOOPSolution mo= new MOOPSolution(
-					functions,
+		MOOPSolution mo2= new MOOPSolution(
+					functions2,
 					4,
-					domainFunctions);
+					domainFunctions2);
+		
+		List<Function<Vector,Double>> functions1 = new ArrayList<>();
+		functions1.add(x -> x.get(0));
+		functions1.add(x -> (1+x.get(1))/(x.get(0)));
+		
+		List<DomainFunction> domainFunctions1 = new ArrayList<>();
+		domainFunctions1.add(new DomainFunction(x -> 0.1 < x.get(0) && x.get(0) < 1));
+		domainFunctions1.add(new DomainFunction(x -> 0 < x.get(1) && x.get(1) < 5));
+		
+		MOOPSolution mo1= new MOOPSolution(
+				functions1,
+				2,
+				domainFunctions1);
+		
 		try{
 			Population P = new Population(populationSize,
 										  maxiter,
-										  mo);
+										  problemType==1?mo1:mo2);
 			P.run();
 		}
 		catch(Exception e)
