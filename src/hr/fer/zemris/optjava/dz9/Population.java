@@ -16,7 +16,7 @@ public class Population
 	
 	private final double minValue = -5;
 	private final double maxValue = 5;
-	private final double sigmaShare = 1.1;
+	private final double sigmaShare = 0.5;
 	private final double epsilon = 0.9;
 	private final double alpha = 2;
 	
@@ -59,10 +59,6 @@ public class Population
 		List<String> lines = new ArrayList<>();
 		while(maxiter-->0)
 		{
-			for(int i=0;i<populationSize;++i)
-				results[i] = solution.evaluateSolution(population.get(i).array);
-			for(int i=0;i<populationSize;++i)
-				lines.add(results[i][0] + " " + results[i][1]);
 			
 			if(maxiter%100==0)
 			{
@@ -83,20 +79,29 @@ public class Population
 			{
 				Vector parent1 = getParent();
 				Vector parent2 = getParent();
-				newPopulation.add(new Vector(getKid(parent1,parent2)));
+				newPopulation.add(new Vector(getKid(parent1.clone(),parent2.clone())));
 			}
-			population = newPopulation.stream()
-						.map(t -> t.clone())
-						.collect(Collectors.toList());
-						
+			population.clear();
+			for(Vector V : newPopulation){
+				population.add(V.clone());
+			}
+			newPopulation.clear();	
 		}
-
+		List<String>lines2 = new ArrayList<>();
+		for(int i=0;i<populationSize;++i)
+			results[i] = solution.evaluateSolution(population.get(i).array);
+		for(int i=0;i<populationSize;++i)
+			lines.add(results[i][0] + " " + results[i][1]);
+		for(int i=0;i<populationSize;++i)
+			lines2.add(population.get(i).array[0]+ " " + population.get(i).array[1]);
 		for(int i=0;i<lines.size();++i)
 		{
 			lines.set(i,lines.get(i).replace('.', ','));
+			lines2.set(i,lines2.get(i).replace('.', ','));
 		}
 		Path file = Paths.get("izlaz-dec.txt");
 		Files.write(file, lines, Charset.forName("UTF-8"));
+		Files.write(Paths.get("izlaz-dec-2.txt"), lines2, Charset.forName("UTF-8"));
 		printSolution();
 	}
 	private void printSolution() throws Exception
@@ -107,7 +112,7 @@ public class Population
 		System.out.println("Results: %n");
 		for(int i=0;i<fronts.get(0).get(0).array.length;++i)
 		{
-			System.out.print(fronts.get(0).get(0).array[0]+" ");
+			System.out.print(fronts.get(0).get(0).array[i]+" ");
 		}
 		
 	}
@@ -135,7 +140,7 @@ public class Population
 			for(int i=0;i<solution.getNumOfVariables();++i)
 			{
 				kid[i] = (parent1.array[i]+parent2.array[i])/2.0
-						+ rand.nextGaussian()*0.125;
+						+ rand.nextGaussian()/3.0*0.125;
 			}
 			if(solution.isDomainOk(kid))
 				return kid;
@@ -167,7 +172,7 @@ public class Population
 	}
 	private void generateKindnessOfPopulation()
 	{
-		int N = populationSize;
+		int N = 50;
 		double Fmin = N + epsilon;
 		List<List<Vector>> fronts = TopologicalSort.runTopologicalSort(results,population);
 		int br = 0;

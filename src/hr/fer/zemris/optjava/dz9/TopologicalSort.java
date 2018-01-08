@@ -14,12 +14,10 @@ public class TopologicalSort
 		{
 			V.add(new ArrayList<>()); 
 		}
-		//System.out.println("Topo table");
 		for(int i=0;i<population.size();++i)
 		{
 			for(int j=i+1;j<population.size();++j)
 			{
-				//int cmp = population.get(i).compareTo(population.get(j));
 				int cmp = compare(results[i],results[j]);
 				if(cmp == 0)continue;
 				else if(cmp == 1)
