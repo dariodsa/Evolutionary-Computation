@@ -1,4 +1,4 @@
-package hr.fer.zemris.optjava.dz9;
+package hr.fer.zemris.optjava.dz10;
 import java.util.function.*;
 public class DomainFunction {
 	
