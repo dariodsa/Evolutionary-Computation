@@ -1,6 +1,7 @@
 package hr.fer.zemris.optjava.dz11.test;
 
-import hr.fer.zemirs.optjava.dz11.rng.*;
+import hr.fer.zemris.optjava.dz11.rng.IRNG;
+import hr.fer.zemris.optjava.dz11.rng.RNG;
 
 public class Test1 {
 	public static void main(String[] args) {
