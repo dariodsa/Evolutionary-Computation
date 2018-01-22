@@ -34,6 +34,22 @@ public class Evaluator implements IGAEvaluator<int[]> {
 	@Override
 	public void evaluate(GASolution<int[]> p) 
 	{
+		draw(p, im);
+		byte[] data = im.getData();
+		byte[] tdata = template.getData();
+		int width = im.getWidth();
+		int height = im.getHeight();
 		
+		double error = 0;
+		int index = 0;
+		for(int i=0;i<height;++i)
+		{
+			for(int j=0;j<width;++j)
+			{
+				error+= Math.abs(((int) data[index] & 0xFF) - ((int) tdata[index] & 0xFF));
+				++index;
+			}
+		}
+		p.fitness = -error;
 	}
 }

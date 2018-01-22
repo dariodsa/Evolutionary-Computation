@@ -41,7 +41,7 @@ public class EVOThread extends Thread implements IRNGProvider {
 	
 	@Override
 	public IRNG getRNG() {
-		return null;
+		return rng;
 	}
 
 }

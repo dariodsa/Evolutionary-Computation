@@ -17,7 +17,7 @@ public class RNG {
 		ClassLoader loader = RNG.class.getClassLoader();
 		try {
 			InputStream is = loader.getResourceAsStream("rng-config.properties");
-			properties.load(loader.getResourceAsStream("rng-config.properties"));
+			properties.load(is);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
