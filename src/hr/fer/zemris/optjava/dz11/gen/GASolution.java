@@ -11,7 +11,7 @@ public abstract class GASolution<T> implements Comparable<GASolution<T>>
 	{
 		return data;
 	}
-	public abstract T setData(T data);
+	public abstract void setData(T data);
 	public abstract GASolution<T> duplicate();
 	@Override
 	public int compareTo(GASolution<T> o) 

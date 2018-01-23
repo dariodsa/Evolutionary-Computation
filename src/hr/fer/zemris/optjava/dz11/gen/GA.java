@@ -23,7 +23,10 @@ public class GA {
 	private Queue<GASolution<int[]>> tasks;
 	private Queue<GASolution<int[]>> results;
 	
-	private final double MUTTATION_RATE = 0.02;
+	private final double MUTTATION_RATE = 0.1;
+	
+	private List<GASolution<int[]>> population ;
+	private ThreadPool pool;
 	
 	public GA(int populationSize, double minFitness, int maxIteration, int numOfRectangles, int width, int height, IGAEvaluator<int[]> evaluator) {
 		this.populationSize = populationSize;
@@ -41,27 +44,29 @@ public class GA {
 	{
 		int NUM_OF_WORKERS = Runtime.getRuntime().availableProcessors();
 		
-		ThreadPool pool = new ThreadPool(NUM_OF_WORKERS, tasks, results, evaluator);
+		pool = new ThreadPool(NUM_OF_WORKERS, tasks, results, evaluator);
 		
-		List<GASolution<int[]>> population = initPopulation();
+		population = initPopulation();
 		int iteration = 0;
+		evaluate(population);
 		GASolution<int[]> best = bestOfPopulation(population);
 		while(iteration < maxIteration || best.fitness > minFitness) 
 		{
-			if(iteration % 10 == 0)
+			if(iteration % 100 == 0)
 				System.out.println(iteration + ". => "+best.fitness);
 			List<GASolution<int[]>> newPopulation = new ArrayList<GASolution<int[]>>();
 			
 			for(int i=0; i<populationSize; ++i)
 			{
-				GASolution<int[]> parent1 = new GAIntArrSolution();
-				GASolution<int[]> parent2 = new GAIntArrSolution();
+				GASolution<int[]> parent1 = findParent();
+				GASolution<int[]> parent2 = findParent();
 				GASolution<int[]> kid = cross(parent1,parent2);
 				muttate(kid);
 				
 				newPopulation.add(kid);
 			}
-			evaluate(population);
+			
+			evaluate(newPopulation);
 			population = newPopulation;
 			
 			best = bestOfPopulation(population);
@@ -73,6 +78,22 @@ public class GA {
 		return best;
 	}
 
+	private GASolution<int[]> findParent() {
+		double rand = RNG.getRNG().nextDouble();
+		double sum = 0;
+		double sum2 = 0;
+		for(int i=0;i<populationSize;++i)
+		{
+			sum += population.get(i).fitness;
+		}
+		for(int i=0;i<populationSize;++i)
+		{
+			sum2 += population.get(i).fitness;
+			if(sum2>rand*sum)
+				return population.get(i);
+		}
+		return population.get(0);
+	}
 	private void muttate(GASolution<int[]> kid) 
 	{
 		IRNG rnd = RNG.getRNG();
@@ -80,9 +101,24 @@ public class GA {
 		{
 			if(rnd.nextDouble()<MUTTATION_RATE)
 			{
-				kid.data[i] = kid.data[i] + (int)(rnd.nextGaussian()+1);
+				if(i%5==0)kid.data[i] = change(0,width-1,kid.data[i],5);
+				if(i%5==0)kid.data[i] = change(0,heigth-1,kid.data[i],5);
+				if(i%5==0)kid.data[i] = change(1,width-kid.data[i],kid.data[i],0.01);
+				if(i%5==0)kid.data[i] = change(1,heigth-kid.data[i],kid.data[i],0.01);
+				if(i%5==0)kid.data[i] = change(0,256,kid.data[i],0.2);
 			}
 		}
+	}
+	private int change(int min,int max, int value,double changeRate)
+	{
+		IRNG rnd = RNG.getRNG();
+		int value2 = value;
+		value2+=(int)((double)changeRate * rnd.nextGaussian());
+		if(max<value2)
+			value2 = max - rnd.nextInt(0, (max-min));
+		if(min>value2)
+			value2=min - rnd.nextInt(0, (max-min));
+		return value2;
 	}
 	private GASolution<int[]> cross(GASolution<int[]> parent1, GASolution<int[]> parent2)
 	{
@@ -111,10 +147,16 @@ public class GA {
 		{
 			tasks.add(solution);
 		}
+		//System.out.println(tasks.size());
+		pool.startAll();
+		pool.joinAll();
+		//System.out.println(results.size());
 		for(int i=0;i<populationSize;++i)
 		{
 			//results.peek();
 			//todo population.
+			double fit = results.peek().fitness;
+			population.get(i).fitness= fit;
 			results.poll();
 		}
 	}
@@ -152,6 +194,7 @@ public class GA {
 				index+=5;
 			}
 			solution.setData(data);
+			//System.out.println(solution.getData().length);
 			population.add(solution);
 		}
 		return population;

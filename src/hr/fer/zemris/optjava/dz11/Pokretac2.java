@@ -5,7 +5,6 @@ import hr.fer.zemris.optjava.dz11.gen.Evaluator;
 import hr.fer.zemris.optjava.dz11.gen.GA;
 import hr.fer.zemris.optjava.dz11.gen.GAIntArrSolution;
 import hr.fer.zemris.optjava.dz11.gen.GASolution;
-import hr.fer.zemris.optjava.dz11.rng.EVOThread;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class Pokretac1 {
+public class Pokretac2 {
 	private final int NUM_OF_WORKERS = Runtime.getRuntime().availableProcessors();
 	
 	private static Path  originalPath;
@@ -51,47 +50,26 @@ public class Pokretac1 {
 		
 		Evaluator evaluator = new Evaluator(img);
 		
-		EVOThread evoDretva = new EVOThread(()->
-			{
-				try{
-				GA G = new GA(populationSize, minFitness, maxIter, numOfRectangles, width, height, evaluator);
-				GASolution<int[]> solution = G.run();
-			
-				if(!Files.exists(resultPath)) {
-					
-						Files.createFile(resultPath);
-				}
-				
-				GrayScaleImage resultImage = evaluator.draw(solution, null);
-				
-					resultImage.save(resultPath.toFile());
-				if(!Files.exists(txtPath)) {
-					
-						Files.createFile(txtPath);
-					
-				}
-				
-				FileWriter fw;
-					fw = new FileWriter(txtPath.toFile());
-				
-				for(int data : solution.getData())
-				{
-					fw.write(String.valueOf(data));
-					fw.write("\n");
-				}
-				fw.flush();
-				fw.close();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			});
-		evoDretva.start();
-		try {
-			evoDretva.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		GA2 G = new GA2(populationSize, minFitness, maxIter, numOfRectangles, width, height, evaluator);
+		GASolution<int[]> solution = G.run();
+		if(!Files.exists(resultPath)) {
+			Files.createFile(resultPath);
 		}
+		
+		GrayScaleImage resultImage = evaluator.draw(solution, null);
+		resultImage.save(resultPath.toFile());
+		
+		if(!Files.exists(txtPath)) {
+			Files.createFile(txtPath);
+		}
+		
+		FileWriter fw = new FileWriter(txtPath.toFile());
+		for(int data : solution.getData())
+		{
+			fw.write(String.valueOf(data));
+			fw.write("\n");
+		}
+		fw.flush();
+		fw.close();
 	}
 }

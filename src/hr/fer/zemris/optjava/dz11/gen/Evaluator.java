@@ -9,6 +9,7 @@ public class Evaluator implements IGAEvaluator<int[]> {
 	{
 		super();
 		this.template = template;
+		
 	}
 	public GrayScaleImage draw(GASolution<int[]> p, GrayScaleImage im) 
 	{
@@ -34,7 +35,7 @@ public class Evaluator implements IGAEvaluator<int[]> {
 	@Override
 	public void evaluate(GASolution<int[]> p) 
 	{
-		draw(p, im);
+		im = draw(p, null);
 		byte[] data = im.getData();
 		byte[] tdata = template.getData();
 		int width = im.getWidth();
@@ -46,9 +47,15 @@ public class Evaluator implements IGAEvaluator<int[]> {
 		{
 			for(int j=0;j<width;++j)
 			{
-				error+= Math.abs(((int) data[index] & 0xFF) - ((int) tdata[index] & 0xFF));
+				/*if(Math.abs(((int) data[index] & 0xFF) - ((int) tdata[index] & 0xFF))==0)
+				{
+					System.out.println(((int) data[index] & 0xFF)+" "+((int) tdata[index] & 0xFF));
+				}*/
+				error+= (Math.abs(((int) data[index] & 0xFF) - ((int) tdata[index] & 0xFF)));
+				
 				++index;
 			}
+			
 		}
 		p.fitness = -error;
 	}
