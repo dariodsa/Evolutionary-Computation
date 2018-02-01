@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
 
+import hr.fer.zemris.optjava.dz13.genetic.Population;
 import hr.fer.zemris.optjava.dz13.graphics.Window;
 
 import javax.swing.SwingUtilities;
@@ -34,7 +35,7 @@ public class AntTrailGA {
 		int rows = matrix.length;
 		int cols = matrix[0].length;
 		
-		Generation generation = new Generation(matrix, maxGeneration, populationSize, minFitness);
+		Population generation = new Population(matrix, maxGeneration, populationSize, minFitness);
 		generation.run();
 		try {
 			SwingUtilities.invokeAndWait(
