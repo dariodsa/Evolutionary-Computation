@@ -40,8 +40,9 @@ public class AntTrailGA {
 			SwingUtilities.invokeAndWait(
 					()->
 					{
-						Window window = new Window(500, 1200, rows, cols);
+						Window window = new Window(600, 500, rows, cols);
 						window.initGUI();
+						window.getGamePanel().update(matrix);
 					});
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
@@ -65,8 +66,9 @@ public class AntTrailGA {
 			for(int col = 0; col < line.length(); ++col)
 			{
 				matrix[row][col] = line.charAt(col);
-				
+				System.out.printf("%c",matrix[row][col]);
 			}
+			System.out.printf("%n");
 		}
 		return matrix;
 	}
