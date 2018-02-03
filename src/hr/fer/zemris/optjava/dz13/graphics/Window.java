@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class Window extends JFrame 
 {
@@ -39,6 +40,20 @@ public class Window extends JFrame
 	{
 		btnForward = new JButton("Next move");
 		btnForward.setVisible(true);
+		btnForward.addActionListener(
+				(e)->{
+						while(true){
+						this.getGamePanel().move();
+						this.update(getGraphics());
+						/*try {
+							Thread.sleep(300);
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}*/
+						}
+					}
+				);
 		btnHelp    = new JButton("Help");
 		btnHelp.addActionListener((e)->{btnHelpClick();});
 		JPanel northPanel = new JPanel(new FlowLayout());

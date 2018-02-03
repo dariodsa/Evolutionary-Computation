@@ -43,7 +43,7 @@ public class AntTrailGA {
 					{
 						Window window = new Window(600, 500, rows, cols);
 						window.initGUI();
-						window.getGamePanel().update(matrix);
+						window.getGamePanel().draw(matrix,Population.positions);
 					});
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block

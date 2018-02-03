@@ -80,4 +80,13 @@ public class AntPosition {
 		this.x = x;
 		this.y = y;
 	}
+	public AntPosition clone()
+	{
+		AntPosition ant = new AntPosition(x,y);
+		ant.moveX = moveX;
+		ant.moveY = moveY;
+		ant.x     = x;
+		ant.y     = y;
+		return ant;
+	}
 }

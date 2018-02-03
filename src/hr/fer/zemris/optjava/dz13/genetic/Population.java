@@ -6,7 +6,7 @@ import hr.fer.zemris.optjava.dz13.genetic.node.Node;
 import hr.fer.zemris.optjava.dz13.genetic.population.InitPopulation;
 import hr.fer.zemris.optjava.dz13.genetic.population.Moves;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 import java.util.Random;
 
@@ -14,6 +14,8 @@ public class Population {
 	
 	public static char[][] matrix;
 	
+	public static int height;
+	public static int width;	
 	private int maxGeneration;
 	private int populationSize;
 	private int minFitness;
@@ -26,13 +28,20 @@ public class Population {
 	private final double CROSS_RATE = 0.85;
 	private final double REPRODUCTION_RATE = 0.01;
 	
+	public final int MAX_NUM_OF_NODES = 800;
+	public final int MAX_DEPTH = 20;
+	
 	private List<Ant>population;
 	
 	public static List<Node> possibleNodes;
 	
+	public static List<AntPosition> positions = new ArrayList<>();
+	
 	public Population(char[][] matrix, int maxGeneration, int populationSize, int minFitness)
 	{
 		Population.matrix = matrix;
+		height = matrix.length;
+		width  = matrix[0].length;
 		this.maxGeneration = maxGeneration;
 		this.populationSize = populationSize;
 		this.minFitness = minFitness;
@@ -46,7 +55,7 @@ public class Population {
 	}
 	public void run()
 	{
-		InitPopulation.initPopulation(population, populationSize);
+		InitPopulation.initPopulation(population, populationSize,possibleNodes,MAX_NUM_OF_NODES);
 		
 		int iter = maxGeneration;
 		while(iter>=0 || bestFitness > minFitness){
@@ -59,7 +68,8 @@ public class Population {
 				double randNum = Population.rand.nextDouble();
 				if(randNum < REPRODUCTION_RATE)
 				{
-					
+					int id = rand.nextInt(populationSize);
+					newPopulation.add(population.get(id));
 					if(newPopulation.size()==populationSize)
 						break;
 				}
@@ -71,21 +81,39 @@ public class Population {
 				}
 				if(randNum < CROSS_RATE)
 				{
+					int parent1 = rand.nextInt(populationSize);
+					int parent2 = rand.nextInt(populationSize);
 					
+					cross(parent1,parent2);
+					
+					newPopulation.add(population.get(parent1));
 					if(newPopulation.size()==populationSize)
 						break;
 				}
 			}
 			population = newPopulation;
 			for(Ant A : population)
+			{
 				A.run();
-			population.sort(null);
+				//System.out.println(A.getFitness());
+			}
+			Collections.sort(population);
 			bestFitness = population.get(0).getFitness();
+			
 		}
+		population.get(0).run(1);
 	}
-	public void mutate()
+	public Ant getTheBestOne()
 	{
-		
+		return this.population.get(0);
+	}
+	private void cross(int parent1, int parent2)
+	{
+		int node1 = rand.nextInt(population.get(parent1).getNodes().size());
+		int node2 = rand.nextInt(population.get(parent2).getNodes().size());
+		population.get(parent1).setNode(
+				population.get(parent2).getNodes().get(node2)
+				, node1);
 	}
 	
 }
