@@ -5,5 +5,5 @@ import hr.fer.zemris.optjava.dz13.genetic.ant.*;
 public interface INode {
 	
 	public boolean canPerform(AntPosition position);
-	public void perform(AntPosition position);
+	public void perform(Ant ant);
 }

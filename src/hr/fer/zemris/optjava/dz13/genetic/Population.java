@@ -1,17 +1,24 @@
 package hr.fer.zemris.optjava.dz13.genetic;
 
 import hr.fer.zemris.optjava.dz13.genetic.ant.Ant;
+import hr.fer.zemris.optjava.dz13.genetic.ant.AntPosition;
 import hr.fer.zemris.optjava.dz13.genetic.node.Node;
+import hr.fer.zemris.optjava.dz13.genetic.population.InitPopulation;
+import hr.fer.zemris.optjava.dz13.genetic.population.Moves;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Population {
 	
-	private char[][] matrix;
+	public static char[][] matrix;
+	
 	private int maxGeneration;
 	private int populationSize;
 	private int minFitness;
+	
+	private static Random rand = new Random();
 	
 	private int bestFitness;
 	
@@ -25,7 +32,7 @@ public class Population {
 	
 	public Population(char[][] matrix, int maxGeneration, int populationSize, int minFitness)
 	{
-		this.matrix = matrix;
+		Population.matrix = matrix;
 		this.maxGeneration = maxGeneration;
 		this.populationSize = populationSize;
 		this.minFitness = minFitness;
@@ -34,35 +41,46 @@ public class Population {
 		this.bestFitness = 0;
 		
 		possibleNodes = new ArrayList<>();
-		possibleNodes.add(new Node(
-					"MOVE",
-					(e)->{return new Boolean(true);},
-					(e)->{e.setXandY(e.getX()+e.getMoveX(),e.getY()+e.getMoveY());
-						return null;},
-					0
-		));
-		possibleNodes.add(new Node(
-				"LEFT",
-				(e)->{return new Boolean(true);},
-				(e)->{e.moveLeft();
-					return null;},
-				0
-		));
-		possibleNodes.add(new Node(
-				"RIGHT",
-				(e)->{return new Boolean(true);},
-				(e)->{e.moveRight();
-					return null;},
-				0
-		));
+		Moves.addMoves(possibleNodes);
+		
 	}
 	public void run()
 	{
+		InitPopulation.initPopulation(population, populationSize);
+		
 		int iter = maxGeneration;
 		while(iter>=0 || bestFitness > minFitness){
 			if(iter % 10 == 0)
 				System.out.printf("%d iterations left ...%nCurrent best one %d%n",iter,bestFitness);
 			--iter;
+			List<Ant> newPopulation = new ArrayList<>();
+			while(true)
+			{
+				double randNum = Population.rand.nextDouble();
+				if(randNum < REPRODUCTION_RATE)
+				{
+					
+					if(newPopulation.size()==populationSize)
+						break;
+				}
+				if(randNum < MUTATION_RATE)
+				{
+					
+					if(newPopulation.size()==populationSize)
+						break;
+				}
+				if(randNum < CROSS_RATE)
+				{
+					
+					if(newPopulation.size()==populationSize)
+						break;
+				}
+			}
+			population = newPopulation;
+			for(Ant A : population)
+				A.run();
+			population.sort(null);
+			bestFitness = population.get(0).getFitness();
 		}
 	}
 	public void mutate()

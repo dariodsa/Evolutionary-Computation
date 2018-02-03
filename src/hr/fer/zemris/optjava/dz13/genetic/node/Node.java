@@ -2,22 +2,26 @@ package hr.fer.zemris.optjava.dz13.genetic.node;
 
 import hr.fer.zemris.optjava.dz13.genetic.ant.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
-public class Node implements INode 
+public abstract class Node implements INode 
 {
 	private int kidsSize;
 	private String name;
 	private Function<AntPosition,Boolean> functionCan;
-	private Function<AntPosition, Void> functionPerform;
+	private Function<Integer, Void> functionPerform;
 	
+	public List<Node>kids = new ArrayList<>();
 	
-	public Node(String name, Function<AntPosition,Boolean> functionCan, Function<AntPosition,Void> functionPerform, int kidsSize)
+	public Node(String name, Function<AntPosition,Boolean> functionCan, int kidsSize)
 	{
 		this.name = name;
 		this.functionCan = functionCan;
-		this.functionPerform = functionPerform;
+		//this.functionPerform = functionPerform;
 		this.kidsSize = kidsSize;
+		this.kids = new ArrayList<>(kidsSize);
 	}
 
 	public int getKidsSize()
@@ -30,11 +34,14 @@ public class Node implements INode
 	{
 		return functionCan.apply(position);
 	}
-
 	@Override
-	public void perform(AntPosition position)
+	public abstract void perform(Ant ant);
+	public void visitKids(Ant A)
 	{
-		functionPerform.apply(position);
+		for(Node kid : kids)
+		{
+			kid.perform(A);
+		}
 		return;
 	}
 	
