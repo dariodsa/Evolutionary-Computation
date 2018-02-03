@@ -68,11 +68,14 @@ public class Node implements INode, Cloneable
 		switch (this.type) {
 		case RIGHT:
 			e.getAntPosition().moveRight();
+			e.sumNodes++;
 			break;
 		case LEFT:
 			e.getAntPosition().moveLeft();
+			e.sumNodes++;
 			break;
 		case MOVE:
+			e.sumNodes++;
 			if(!canPerform(e.getAntPosition()))
 				break;
 			e.getAntPosition().setXandY(e.getAntPosition().getX()+e.getAntPosition().getMoveX(),
@@ -108,11 +111,14 @@ public class Node implements INode, Cloneable
 		switch (this.type) {
 		case RIGHT:
 			e.getAntPosition().moveRight();
+			e.sumNodes++;
 			break;
 		case LEFT:
+			e.sumNodes++;
 			e.getAntPosition().moveLeft();
 			break;
 		case MOVE:
+			e.sumNodes++;
 			if(!canPerform(e.getAntPosition()))
 				break;
 			e.getAntPosition().setXandY(e.getAntPosition().getX()+e.getAntPosition().getMoveX(),

@@ -9,7 +9,7 @@ import java.util.*;
 public class InitPopulation {
 
 	private static Random random = new Random();
-	private static double[] prob = {0.10, 0.10, 0.10, 0.25, 0.25, 0.20};
+	private static double[] prob = {0.0666, 0.0666, 0.06666, 0.2666, 0.25, 0.27666};
 	public static void initPopulation(List<Ant> population, int populationSize, List<Node> possibleNodes, int MAX_NUM_OF_NODES)
 	{
 		int first = getNode();  
@@ -56,4 +56,5 @@ public class InitPopulation {
 		}
 		return 1;
 	}
+	
 }

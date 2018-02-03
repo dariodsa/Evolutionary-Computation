@@ -27,8 +27,8 @@ public class Population {
 	private final double MUTATION_RATE = 0.14;
 	private final double CROSS_RATE = 0.85;
 	private final double REPRODUCTION_RATE = 0.01;
-	
-	public final int MAX_NUM_OF_NODES = 800;
+	private final int TOURNAMENT_SIZE = 7;
+	public final int MAX_NUM_OF_NODES = 200;
 	public final int MAX_DEPTH = 20;
 	
 	private List<Ant>population;
@@ -68,7 +68,7 @@ public class Population {
 				double randNum = Population.rand.nextDouble();
 				if(randNum < REPRODUCTION_RATE)
 				{
-					int id = rand.nextInt(populationSize);
+					int id = getOne();
 					newPopulation.add(population.get(id));
 					if(newPopulation.size()==populationSize)
 						break;
@@ -81,8 +81,8 @@ public class Population {
 				}
 				if(randNum < CROSS_RATE)
 				{
-					int parent1 = rand.nextInt(populationSize);
-					int parent2 = rand.nextInt(populationSize);
+					int parent1 = getOne();
+					int parent2 = getOne();
 					
 					cross(parent1,parent2);
 					
@@ -92,16 +92,32 @@ public class Population {
 				}
 			}
 			population = newPopulation;
+			
 			for(Ant A : population)
 			{
 				A.run();
 				//System.out.println(A.getFitness());
 			}
+			
 			Collections.sort(population);
 			bestFitness = population.get(0).getFitness();
 			
 		}
 		population.get(0).run(1);
+	}
+	private int getOne() {
+		List<Integer> list = new ArrayList<>();
+		for(int i=0;i<TOURNAMENT_SIZE;++i)
+			 list.add(rand.nextInt(populationSize));
+		int fit = -1;
+		int id = 0;
+		for(int i=0;i<TOURNAMENT_SIZE;++i)
+			 if(population.get(list.get(i)).getFitness()>fit)
+			 {
+				 id = list.get(i);
+				 fit = population.get(list.get(i)).getFitness();
+			 }
+		return id;
 	}
 	public Ant getTheBestOne()
 	{

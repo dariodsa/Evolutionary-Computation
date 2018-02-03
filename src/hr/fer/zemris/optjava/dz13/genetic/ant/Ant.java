@@ -7,11 +7,15 @@ import java.util.*;
 
 public class Ant implements Comparable<Ant>
 {
+	private final int MAX_OPERATIONS = 600;
 	private AntPosition antPosition;
 	private Node initNode;
 	private List<Node> nodes;
 	private int fitness;
+	public int sumNodes;
 	public boolean[][] bio;
+	
+	
 	public Ant()
 	{
 		this.antPosition = new AntPosition(0, 0);
@@ -30,14 +34,25 @@ public class Ant implements Comparable<Ant>
 			for(int j=0;j<Population.width;++j)
 				bio[i][j] = false;
 		this.antPosition = new AntPosition(0, 0);
-		initNode.perform(this);
+		this.sumNodes = 0;
+		while(this.sumNodes<MAX_OPERATIONS)
+		{
+			int k = this.sumNodes;
+			initNode.perform(this);
+			if(k==this.sumNodes)
+				System.out.println(this.sumNodes + " :-(");
+		}
 	}
 	public void run(int pos)
 	{
 		this.fitness = 0;
 		this.antPosition = new AntPosition(0, 0);
 		Population.positions.add(this.antPosition.clone());
-		initNode.perform(this,1);
+		sumNodes = 0;
+		while(sumNodes<MAX_OPERATIONS)
+		{
+			initNode.perform(this,1);
+		}
 	}
 	public int getFitness()
 	{
