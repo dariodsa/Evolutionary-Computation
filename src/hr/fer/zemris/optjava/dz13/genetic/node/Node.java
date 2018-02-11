@@ -119,6 +119,7 @@ public class Node implements INode, Cloneable
 			break;
 		case MOVE:
 			e.sumNodes++;
+			
 			if(!canPerform(e.getAntPosition()))
 				break;
 			e.getAntPosition().setXandY(e.getAntPosition().getX()+e.getAntPosition().getMoveX(),

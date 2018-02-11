@@ -9,7 +9,8 @@ import java.util.*;
 public class InitPopulation {
 
 	private static Random random = new Random();
-	private static double[] prob = {0.0666, 0.0666, 0.06666, 0.2666, 0.25, 0.27666};
+	//private static double[] prob = {0.0866, 0.0566, 0.05666, 0.2666, 0.25, 0.27666};
+	private static double[] prob = {0.16666, 0.16666, 0.16666, 0.16666, 0.16666, 0.16666};
 	public static void initPopulation(List<Ant> population, int populationSize, List<Node> possibleNodes, int MAX_NUM_OF_NODES)
 	{
 		int first = getNode();  
@@ -43,6 +44,30 @@ public class InitPopulation {
 			
 			population.add(A);
 		}
+	}
+	public static Node getSubTreeSize(int numOfNodes, List<Node> possibleNodes)
+	{
+		int first = getNode();
+		Node initNode = possibleNodes.get(first).clone();
+		Queue<Node> Q = new LinkedList<>();
+		Q.add(initNode);
+		int sumNode = 1;
+		while(!Q.isEmpty())
+		{
+			Node N = Q.poll();
+			//System.out.println(Q.size()+ " " + N.getType());
+			for(int j=0;j<N.getKidsSize();++j)
+			{
+				int idNode = getNode();
+				if(sumNode > numOfNodes)
+					idNode = random.nextInt(3);
+				Node newNode = possibleNodes.get(idNode).clone();
+				N.addKid(newNode);
+				Q.add(newNode);
+				++sumNode;
+			}
+		}
+		return initNode;
 	}
 	private static int getNode()
 	{

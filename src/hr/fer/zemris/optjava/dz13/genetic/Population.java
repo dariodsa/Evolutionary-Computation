@@ -24,8 +24,8 @@ public class Population {
 	
 	private int bestFitness;
 	
-	private final double MUTATION_RATE = 0.14;
-	private final double CROSS_RATE = 0.85;
+	private final double MUTATION_RATE = 0.34;
+	private final double CROSS_RATE = 0.65;
 	private final double REPRODUCTION_RATE = 0.01;
 	private final int TOURNAMENT_SIZE = 7;
 	public final int MAX_NUM_OF_NODES = 200;
@@ -75,7 +75,9 @@ public class Population {
 				}
 				if(randNum < MUTATION_RATE)
 				{
-					
+					int id = getOne();
+					mutate(id);
+					newPopulation.add(population.get(id));
 					if(newPopulation.size()==populationSize)
 						break;
 				}
@@ -83,7 +85,7 @@ public class Population {
 				{
 					int parent1 = getOne();
 					int parent2 = getOne();
-					
+					//System.out.printf("CROSS %d %d%n",parent1,parent2);
 					cross(parent1,parent2);
 					
 					newPopulation.add(population.get(parent1));
@@ -92,18 +94,24 @@ public class Population {
 				}
 			}
 			population = newPopulation;
-			
+			//System.out.println("Evaluation ...");
 			for(Ant A : population)
 			{
 				A.run();
-				//System.out.println(A.getFitness());
+				if(iter==297)System.out.printf("%d ",A.getFitness());
 			}
-			
+			if(iter==297)System.out.println("Evaluation done.");
 			Collections.sort(population);
 			bestFitness = population.get(0).getFitness();
 			
 		}
 		population.get(0).run(1);
+	}
+	private void mutate(int id) 
+	{
+		int node = rand.nextInt(population.get(id).getNodes().size());
+		int numOfNodes = MAX_NUM_OF_NODES - population.get(id).getNodes().size();
+		population.get(id).setNode(InitPopulation.getSubTreeSize(numOfNodes, possibleNodes), node);
 	}
 	private int getOne() {
 		List<Integer> list = new ArrayList<>();
