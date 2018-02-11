@@ -17,6 +17,7 @@ public class InitPopulation {
 		
 		for(int i=0;i<populationSize;++i)
 		{
+			first = getNode();
 			Ant A = new Ant();
 			System.out.println(i);
 			Queue<Node> Q = new LinkedList<>();
@@ -32,7 +33,7 @@ public class InitPopulation {
 				for(int j=0;j<N.getKidsSize();++j)
 				{
 					int idNode = getNode();
-					if(sumNode > MAX_NUM_OF_NODES)
+					if(sumNode > MAX_NUM_OF_NODES-75)
 						idNode = random.nextInt(3);
 					Node newNode = possibleNodes.get(idNode).clone();
 					N.addKid(newNode);
@@ -41,9 +42,10 @@ public class InitPopulation {
 					++sumNode;
 				}
 			}
-			
+			System.out.printf("%d. %d %d%n",i+1,sumNode,A.getNodes().size());
 			population.add(A);
 		}
+		
 	}
 	public static Node getSubTreeSize(int numOfNodes, List<Node> possibleNodes)
 	{

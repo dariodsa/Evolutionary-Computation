@@ -58,6 +58,7 @@ public class Population {
 		InitPopulation.initPopulation(population, populationSize,possibleNodes,MAX_NUM_OF_NODES);
 		
 		int iter = maxGeneration;
+		bestFitness = population.get(0).getFitness();
 		while(iter>=0 || bestFitness > minFitness){
 			if(iter % 10 == 0)
 				System.out.printf("%d iterations left ...%nCurrent best one %d%n",iter,bestFitness);
@@ -65,31 +66,53 @@ public class Population {
 			List<Ant> newPopulation = new ArrayList<>();
 			while(true)
 			{
+				/*for(int i=0;i<populationSize;++i)
+				{
+					newPopulation.add(population.get(i).clone());
+				}
+				break;*/
 				double randNum = Population.rand.nextDouble();
+				//System.out.println(randNum + " " + newPopulation.size());
 				if(randNum < REPRODUCTION_RATE)
 				{
 					int id = getOne();
-					newPopulation.add(population.get(id));
-					if(newPopulation.size()==populationSize)
+					newPopulation.add(population.get(id).clone());
+					if(newPopulation.size()>=populationSize)
 						break;
 				}
-				if(randNum < MUTATION_RATE)
+				else if(randNum < MUTATION_RATE)
 				{
+					//System.out.println("MUTATE");
 					int id = getOne();
-					mutate(id);
-					newPopulation.add(population.get(id));
-					if(newPopulation.size()==populationSize)
+					Ant newKid = mutate(id);
+					newPopulation.add(newKid);
+					if(newPopulation.size()>=populationSize)
 						break;
 				}
-				if(randNum < CROSS_RATE)
+				else if(randNum < CROSS_RATE)
 				{
 					int parent1 = getOne();
 					int parent2 = getOne();
 					//System.out.printf("CROSS %d %d%n",parent1,parent2);
-					cross(parent1,parent2);
+					//cross(parent1,parent2);
+					int node1 = rand.nextInt(population.get(parent1).getNodes().size());
+					int node2 = rand.nextInt(population.get(parent2).getNodes().size());
 					
-					newPopulation.add(population.get(parent1));
-					if(newPopulation.size()==populationSize)
+					Ant newKid1 = population.get(parent1).clone();
+					Ant newKid1_temp = newKid1.clone();
+					Ant newKid2 = population.get(parent2).clone();
+					
+					newKid1.setNode(
+							newKid2.getNodes().get(node2)
+							, node1);
+					newKid2.setNode(newKid1_temp.getNodes().get(node1)
+							, node2);
+					newKid1.setAllKidsAllOverAgain();
+					newKid2.setAllKidsAllOverAgain();
+					newPopulation.add(newKid1);
+					newPopulation.add(newKid2);
+					
+					if(newPopulation.size()>=populationSize)
 						break;
 				}
 			}
@@ -98,20 +121,46 @@ public class Population {
 			for(Ant A : population)
 			{
 				A.run();
-				if(iter==297)System.out.printf("%d ",A.getFitness());
 			}
-			if(iter==297)System.out.println("Evaluation done.");
+			/*for(Ant A : population)
+			{
+				System.out.printf("%d ",A.getFitness());
+			}
+			System.out.printf("%n");*/
 			Collections.sort(population);
 			bestFitness = population.get(0).getFitness();
 			
 		}
 		population.get(0).run(1);
 	}
-	private void mutate(int id) 
+	private Ant mutate(int id) 
 	{
 		int node = rand.nextInt(population.get(id).getNodes().size());
 		int numOfNodes = MAX_NUM_OF_NODES - population.get(id).getNodes().size();
-		population.get(id).setNode(InitPopulation.getSubTreeSize(numOfNodes, possibleNodes), node);
+		Ant temp = population.get(id).clone();
+		Node subTree = InitPopulation.getSubTreeSize(numOfNodes, possibleNodes);
+		
+		Node parent = temp.getNode(node).getParent();
+		int pos = -1;
+		if(parent != null)
+		{
+			for(int i = 0; i < parent.getKidsSize(); ++i)
+			{
+				if(parent.getKids().get(i) == temp.getNode(node))
+				{
+					pos = i;
+				}
+			}
+			temp.setNode(subTree, node);
+			parent.getKids().set(pos, subTree);
+		}
+		else
+		{
+			temp.setNode(subTree, node);
+			temp.setInitNode(subTree);
+		}
+		temp.setAllKidsAllOverAgain();
+		return temp;
 	}
 	private int getOne() {
 		List<Integer> list = new ArrayList<>();
@@ -133,11 +182,7 @@ public class Population {
 	}
 	private void cross(int parent1, int parent2)
 	{
-		int node1 = rand.nextInt(population.get(parent1).getNodes().size());
-		int node2 = rand.nextInt(population.get(parent2).getNodes().size());
-		population.get(parent1).setNode(
-				population.get(parent2).getNodes().get(node2)
-				, node1);
+		
 	}
 	
 }

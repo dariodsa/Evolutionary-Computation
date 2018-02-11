@@ -5,7 +5,7 @@ import hr.fer.zemris.optjava.dz13.genetic.node.Node;
 
 import java.util.*;
 
-public class Ant implements Comparable<Ant>
+public class Ant implements Comparable<Ant>, Cloneable
 {
 	private final int MAX_OPERATIONS = 600;
 	private AntPosition antPosition;
@@ -78,8 +78,44 @@ public class Ant implements Comparable<Ant>
 	{
 		return this.antPosition;
 	}
+	@Override
 	public int compareTo(Ant A)
 	{
 		return Integer.compare(A.fitness, fitness);
+	}
+	public Node getNode(int pos)
+	{
+		return this.nodes.get(pos);
+	}
+	private void construct(Node pos)
+	{
+		addNode(pos);
+		for(Node kid : pos.getKids())
+		{
+			construct(kid);
+		}
+	}
+	public void setAllKidsAllOverAgain()
+	{
+		nodes.clear();
+		setAllKidsAllOverAgain(initNode);
+	}
+	private void setAllKidsAllOverAgain(Node node) 
+	{		
+		nodes.add(node);
+		for(Node kid: node.kids)
+		{
+			setAllKidsAllOverAgain(kid);
+		}
+	}
+	@Override
+	public Ant clone()
+	{
+		Ant A = new Ant();
+		A.fitness = fitness;
+		
+		A.initNode = initNode.clone();
+		A.construct(A.initNode);
+		return A;
 	}
 }

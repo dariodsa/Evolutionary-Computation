@@ -10,6 +10,7 @@ import java.util.function.Function;
 public class Node implements INode, Cloneable
 {
 	private int kidsSize;
+	private Node parent;
 	private String name;
 	private NodeType type;
 	/*private Function<AntPosition,Boolean> functionCan;
@@ -21,14 +22,24 @@ public class Node implements INode, Cloneable
 	{
 		this.name = name;
 		this.type = type;
+		this.parent = null;
 		//this.functionCan = functionCan;
 		//this.functionPerform = functionPerform;
 		this.kidsSize = kidsSize;
 		this.kids = new ArrayList<>(kidsSize);
 	}
+	public void setParent(Node parent)
+	{
+		this.parent = parent;
+	}
+	public Node getParent()
+	{
+		return this.parent;
+	}
 	public void addKid(Node kid)
 	{
 		kids.add(kid);
+		kid.setParent(this);
 	}
 	public int getKidsSize()
 	{
@@ -78,8 +89,8 @@ public class Node implements INode, Cloneable
 			e.sumNodes++;
 			if(!canPerform(e.getAntPosition()))
 				break;
-			e.getAntPosition().setXandY(e.getAntPosition().getX()+e.getAntPosition().getMoveX(),
-                    					e.getAntPosition().getY()+e.getAntPosition().getMoveY());
+			e.getAntPosition().setXandY( mod(e.getAntPosition().getX()+e.getAntPosition().getMoveX(),e.bio[0].length),
+                    					 mod(e.getAntPosition().getY()+e.getAntPosition().getMoveY(),e.bio.length));
 			if(Population.matrix[e.getAntPosition().getX()]
 								[e.getAntPosition().getY()] == '1' && !e.bio[e.getAntPosition().getX()]
 								[e.getAntPosition().getY()])
@@ -122,14 +133,20 @@ public class Node implements INode, Cloneable
 			
 			if(!canPerform(e.getAntPosition()))
 				break;
-			e.getAntPosition().setXandY(e.getAntPosition().getX()+e.getAntPosition().getMoveX(),
-                    					e.getAntPosition().getY()+e.getAntPosition().getMoveY());
+			e.getAntPosition().setXandY( mod(e.getAntPosition().getX()+e.getAntPosition().getMoveX(), e.bio[0].length),
+                    					 mod(e.getAntPosition().getY()+e.getAntPosition().getMoveY()  , e.bio.length)  );
 			Population.positions.add(e.getAntPosition().clone());
+			try{
 			if(Population.matrix[e.getAntPosition().getX()]
 								[e.getAntPosition().getY()] == '1')
 			{
 					//e.addFitness();
 					//System.out.println("found food !!!!");
+			}}
+			catch(Exception ex){
+				System.out.println(ex.getMessage());
+				System.out.printf("vel %d %d%n",e.bio[0].length,e.bio.length);
+				System.out.printf("%d %d%n",e.getAntPosition().getX(),e.getAntPosition().getY());
 			}
 			break;
 		case PROG2:
@@ -152,6 +169,24 @@ public class Node implements INode, Cloneable
 			break;
 		}
 	}
+	private int mod(int x,int y) {
+		
+		/*if(x < 0)
+		{
+			while(x<0)
+			{
+				x+=y;
+			}
+		}
+		else if(x>0)
+		{
+			while(x>=y)
+			{
+				x-=y;
+			}
+		}*/
+		return x;
+	}
 	public void visitKids(Ant A)
 	{
 		for(Node kid : kids)
@@ -163,7 +198,12 @@ public class Node implements INode, Cloneable
 	@Override
 	public Node clone()
 	{
-		return new Node(name,type,kidsSize);
+		Node kidClone = new Node(name,type,kidsSize);
+		for(Node kid : kids)
+		{
+			kidClone.addKid(kid.clone());
+		}
+		return kidClone;
 	}
 	
 }
