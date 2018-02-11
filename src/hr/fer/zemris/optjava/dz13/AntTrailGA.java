@@ -35,7 +35,7 @@ public class AntTrailGA {
 		int rows = matrix.length;
 		int cols = matrix[0].length;
 		
-		Population generation = new Population(matrix, maxGeneration, populationSize, minFitness);
+		Population generation = new Population(matrix, maxGeneration, populationSize, minFitness, resultPath);
 		generation.run();
 		try {
 			SwingUtilities.invokeAndWait(

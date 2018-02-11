@@ -6,9 +6,10 @@ import hr.fer.zemris.optjava.dz13.genetic.node.Node;
 import hr.fer.zemris.optjava.dz13.genetic.population.InitPopulation;
 import hr.fer.zemris.optjava.dz13.genetic.population.Moves;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.List;
-import java.util.Random;
 
 public class Population {
 	
@@ -32,12 +33,14 @@ public class Population {
 	public final int MAX_DEPTH = 20;
 	
 	private List<Ant>population;
+
+	private Path resultPath;
 	
 	public static List<Node> possibleNodes;
 	
 	public static List<AntPosition> positions = new ArrayList<>();
 	
-	public Population(char[][] matrix, int maxGeneration, int populationSize, int minFitness)
+	public Population(char[][] matrix, int maxGeneration, int populationSize, int minFitness, Path resultPath)
 	{
 		Population.matrix = matrix;
 		height = matrix.length;
@@ -45,7 +48,7 @@ public class Population {
 		this.maxGeneration = maxGeneration;
 		this.populationSize = populationSize;
 		this.minFitness = minFitness;
-		
+		this.resultPath = resultPath;
 		this.population  = new ArrayList<>();
 		this.bestFitness = 0;
 		
@@ -80,7 +83,7 @@ public class Population {
 					if(newPopulation.size()>=populationSize)
 						break;
 				}
-				else if(randNum < MUTATION_RATE)
+				else if(randNum < MUTATION_RATE + REPRODUCTION_RATE)
 				{
 					//System.out.println("MUTATE");
 					int id = getOne();
@@ -89,7 +92,7 @@ public class Population {
 					if(newPopulation.size()>=populationSize)
 						break;
 				}
-				else if(randNum < CROSS_RATE)
+				else if(randNum < CROSS_RATE + REPRODUCTION_RATE + MUTATION_RATE)
 				{
 					int parent1 = getOne();
 					int parent2 = getOne();
@@ -132,6 +135,14 @@ public class Population {
 			
 		}
 		population.get(0).run(1);
+		List<String>lines = new ArrayList<>();
+		lines.add(population.get(0).run("1"));
+		try {
+			Files.write(resultPath, lines);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	private Ant mutate(int id) 
 	{

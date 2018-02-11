@@ -54,6 +54,20 @@ public class Ant implements Comparable<Ant>, Cloneable
 			initNode.perform(this,1);
 		}
 	}
+	public String run(String t)
+	{
+		this.fitness = 0;
+		this.antPosition = new AntPosition(0, 0);
+		Population.positions.add(this.antPosition.clone());
+		sumNodes = 0;
+		String s="";
+		while(sumNodes<MAX_OPERATIONS)
+		{
+			s+=initNode.perform(this,1,1);
+			s+="\n";
+		}
+		return s;
+	}
 	public int getFitness()
 	{
 		return this.fitness;

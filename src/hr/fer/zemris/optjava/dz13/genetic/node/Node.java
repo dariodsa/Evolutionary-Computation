@@ -169,6 +169,52 @@ public class Node implements INode, Cloneable
 			break;
 		}
 	}
+	public String perform(Ant e, int br,int x)
+	{
+		switch (this.type) {
+		case RIGHT:
+			e.getAntPosition().moveRight();
+			e.sumNodes++;
+			return "Right";
+		case LEFT:
+			e.sumNodes++;
+			e.getAntPosition().moveLeft();
+			return "Left";
+			
+		case MOVE:
+			e.sumNodes++;
+			return "Move";
+			
+			
+		case PROG2:
+			String te="PROG2( ";
+			te +=this.kids.get(0).perform(e,1,1);
+			te +=", ";
+			this.kids.get(1).perform(e,1,1);
+			te +=")";
+			return te;
+			
+		case PROG3:
+			String tea="PROG2( ";
+			tea += this.kids.get(0).perform(e,1,1);
+			tea +=", ";
+			tea += this.kids.get(1).perform(e,1,1);
+			tea +=", ";
+			tea += this.kids.get(2).perform(e,1,1);
+			tea +=")";
+			return tea;
+		case IFFOODAHEAD:
+			String teb="IfFoodAhead( ";
+			teb += this.kids.get(0).perform(e,1,1);
+			teb +=", ";
+			teb += this.kids.get(1).perform(e,1,1);
+			teb +=")";
+			return teb;
+		default:
+			break;
+		}
+		return "";
+	}
 	private int mod(int x,int y) {
 		
 		/*if(x < 0)

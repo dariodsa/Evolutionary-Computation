@@ -33,7 +33,7 @@ public class InitPopulation {
 				for(int j=0;j<N.getKidsSize();++j)
 				{
 					int idNode = getNode();
-					if(sumNode > MAX_NUM_OF_NODES-75)
+					if(sumNode > MAX_NUM_OF_NODES-65)
 						idNode = random.nextInt(3);
 					Node newNode = possibleNodes.get(idNode).clone();
 					N.addKid(newNode);
